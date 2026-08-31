@@ -11,9 +11,11 @@ Thumbs.db
 
 # Added by devkitpro template
 [Bb]uild/
-[Rr]eleases/
 [Bb]in/
 /.ip
+
+# Keep the .rsf file
+[Rr]eleases/*/
 
 # Executables
 *.smdh
