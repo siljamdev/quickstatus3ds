@@ -1,5 +1,5 @@
 # QuickStatus
-<img src="icon.png" width="200"/>
+<img src="beautifulIcon.png" width="200"/>
 
 Quick status app for the 3DS: Battery, charging state, SDMC, NAND, Internet connection.
 
