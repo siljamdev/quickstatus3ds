@@ -20,7 +20,7 @@
 u64 updateTime = 1000;
 
 C2D_TextBuf staticBuffer, dynamicBuffer, logBuffer;
-C2D_Text batteryErrorText, sdText, nandText, exitText, batteryText;
+C2D_Text batteryErrorText, sdText, nandText, keybindsText, batteryText;
 
 u32 errCol, clearCol, greenCol, chargingCol, blackCol, barCol, backCol;
 float sdFilled = 0, nandFilled = 0;
@@ -137,7 +137,7 @@ void drawBar(float yPos, u32 color, float filled, C2D_Text* text){
 	C2D_DrawRectSolid(left + border, yPos + border, 0, width - border * 2, height - border * 2, backCol);
 	C2D_DrawRectSolid(left + border, yPos + border, 0, (width - border * 2) * filled, height - border * 2, color);
 	
-	C2D_DrawText(text, C2D_AtBaseline | C2D_AlignCenter, left + width / 2, yPos + height / 2 + 6.0f, -0.0f, 0.45f, 0.45f);
+	C2D_DrawText(text, C2D_AtBaseline | C2D_AlignCenter, left + width / 2, yPos + height / 2 + 6.0f, -0.0f, 0.5f, 0.5f);
 	
 	C2D_Text percentage;
 	generateTextDynamic(&percentage, "%.2f%%", filled * 100.0f);
@@ -184,7 +184,7 @@ void sceneInit(){
 	logBuffer = C2D_TextBufNew(LOG_LINES * LOG_COLUMNS);
 	
 	generateTextStatic(&batteryErrorText, "Battery error");
-	generateTextStatic(&exitText, "Press START to exit");
+	generateTextStatic(&keybindsText, "\xEE\x81\xBD: change update time,   START: exit");
 	generateTextStatic(&batteryText, "Battery");
 	
 	FS_ArchiveResource sd;
@@ -224,13 +224,15 @@ void sceneInit(){
 	barCol = C2D_Color32(255, 45, 45, 255);
 }
 
-void sceneRenderBottom(){
-	C2D_DrawText(&exitText, C2D_AtBaseline | C2D_AlignCenter, BOTTOM_SCREEN_WIDTH / 2.0f, BOTTOM_SCREEN_HEIGHT - 5.0, 0.0f, 0.5f, 0.5f);
-	
+void sceneRenderBottom(){	
 	const float tab = 10.0f;
 	const float border = 3.0f;
 	const float ysize = 190.0f;
 	
+	//Bottom keybinds
+	C2D_DrawText(&keybindsText, C2D_AtBaseline | C2D_AlignCenter, BOTTOM_SCREEN_WIDTH / 2.0f, BOTTOM_SCREEN_HEIGHT - 5.0, 0.0f, 0.5f, 0.5f);
+	
+	//Rectangle for log
 	C2D_DrawRectSolid(tab, tab, 0, BOTTOM_SCREEN_WIDTH - tab * 2, ysize, blackCol);
 	C2D_DrawRectSolid(tab + border, tab + border, 0, BOTTOM_SCREEN_WIDTH - tab * 2 - border * 2, ysize - border * 2, backCol);
 	
@@ -344,6 +346,15 @@ void sceneRenderTop(){
 		C2D_DrawText(&dynText4, 0, 15.0f, 130.0f, 0.0f, 0.5f, 0.5f);
 	}
 	
+	//Uptime
+	C2D_Text dynText5;
+	generateTextDynamic(&dynText5, uptimeText);
+	C2D_DrawText(&dynText5, 0, 15.0f, 150.0, 0.0f, 0.5f, 0.5f);
+	
+	//Separator
+	C2D_DrawRectSolid(0.0f, TOP_SCREEN_HEIGHT - 20.0f, 0, TOP_SCREEN_WIDTH, 3.0f, blackCol);
+	C2D_DrawRectSolid(0.0f, TOP_SCREEN_HEIGHT - 17.0f, 0, TOP_SCREEN_WIDTH, 17.0f, backCol);
+	
 	//Time to update
 	C2D_Text dynText2;
 	generateTextDynamic(&dynText2, "%.2f / %.2f s", (updateTime - now + lastUpdate) / 1000.0d, updateTime / 1000.0d);
@@ -353,11 +364,6 @@ void sceneRenderTop(){
 	C2D_Text dynText3;
 	generateTextDynamic(&dynText3, clockText);
 	C2D_DrawText(&dynText3, C2D_AtBaseline | C2D_AlignRight, TOP_SCREEN_WIDTH - 5.0, TOP_SCREEN_HEIGHT - 5.0f, 0.0f, 0.4f, 0.4f);
-	
-	//Uptime
-	C2D_Text dynText5;
-	generateTextDynamic(&dynText5, uptimeText);
-	C2D_DrawText(&dynText5, 0, 15.0f, 150.0, 0.0f, 0.5f, 0.5f);
 }
 
 void sceneExit(){
@@ -411,8 +417,8 @@ int main(int argc, char **argv){
 	sceneInit();
 	
 	KeyRepeat up, down;
-	krCreate(&up, KEY_UP, 0.25f, 0.05f);
-	krCreate(&down, KEY_DOWN, 0.25f, 0.05f);
+	krCreate(&up, KEY_UP, 0.25f, 0.025f);
+	krCreate(&down, KEY_DOWN, 0.25f, 0.025f);
 	
 	while(aptMainLoop()){
 		//START
