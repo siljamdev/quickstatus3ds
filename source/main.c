@@ -24,6 +24,7 @@ C2D_Text batteryErrorText, sdText, nandText, exitText, batteryText;
 
 u32 errCol, clearCol, greenCol, chargingCol, blackCol, barCol, backCol;
 float sdFilled = 0, nandFilled = 0;
+bool updateBottom = true;
 
 char logg[LOG_LINES][LOG_COLUMNS];
 C2D_Text logText[LOG_LINES];
@@ -165,12 +166,16 @@ void addLog(const char* format, ...){
 		C2D_TextParse(&logText[i], logBuffer, logg[i]);
 		C2D_TextOptimize(&logText[i]);
 	}
+	
+	updateBottom = true;
 }
 
 void clearLog(){
 	for(int i = 0; i < LOG_LINES; i++){
 		logg[i][0] = '\0';
 	}
+	
+	updateBottom = true;
 }
 
 void sceneInit(){
@@ -418,10 +423,14 @@ int main(int argc, char **argv){
 		
 		sceneRenderTop();
 		
-		C2D_TargetClear(bottom, clearCol);
-		C2D_SceneBegin(bottom);
-		
-		sceneRenderBottom();
+		if(updateBottom){
+			C2D_TargetClear(bottom, clearCol);
+			C2D_SceneBegin(bottom);
+			
+			sceneRenderBottom();
+			
+			updateBottom = false;
+		}
 		
 		//END
 		C3D_FrameEnd(0);
